@@ -26,6 +26,8 @@ const router = express.Router();
 const CatalogList = require("../models/catalog-list");
 const LocationInfo = require("../models/location-info");
 
+const locationId = process.env[`SQUARE_LOCATION_ID`]
+
 /**
  * Matches: /checkout or /order-status, respectively.
  *
@@ -48,14 +50,16 @@ router.get("/", async (req, res, next) => {
   const types = "ITEM,IMAGE"; // To retrieve TAX or CATEGORY objects add them to types
   try {
     // Retrieves locations in order to display the store name
-    const { result: { locations } } = await locationsApi.listLocations();
+    // const { result: { locations } } = await locationsApi.listLocations();
+    const { result: { location } } = await locationsApi.retrieveLocation(locationId);
+
     // Get CatalogItem and CatalogImage object
     const { result: { objects } } = await catalogApi.listCatalog(undefined, types);
 
     // Renders index view, with catalog and location information
     res.render("index", {
       items: new CatalogList(objects).items,
-      locationInfo: new LocationInfo(locations[0]), // take the first location for the sake of simplicity.
+      locationInfo: new LocationInfo(location), // take the first location for the sake of simplicity.
     });
   } catch (error) {
     next(error);

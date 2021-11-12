@@ -440,6 +440,7 @@ router.post("/payment", async (req, res, next) => {
           idempotencyKey,
           amountMoney: order.totalMoney, // Provides total amount of money and currency to charge for the order.
           orderId: order.id, // Order that is associated with the payment
+          locationId
         });
     
         const result = JSON.stringify(payment, (key, value) => {
